@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  fullname String
+  email    String @unique
+  password String
+  role     String @default("customer")
+
+  bookings Booking[]
+
+  createdAt DateTime @default(now())
+}
+
+model Route {
+  id          Int    @id @default(autoincrement())
+  origin      String
+  destination String
+  fare        Float
+
+  status    String @default("Boarding")
+  operator  String
+  vehicle   String
+  departure String
+  arrival   String
+  seats     Int
+
+  bookings Booking[]
+}
+
+model Booking {
+  id         Int    @id @default(autoincrement())
+  userId     Int
+  routeId    Int
+  seatNumber String
+  status     String @default("pending")
+
+  user  User  @relation(fields: [userId], references: [id])
+  route Route @relation(fields: [routeId], references: [id])
+
+  createdAt DateTime @default(now())
+}
